@@ -1,1 +1,9 @@
-# hau_DA
+## Project setup
+```
+npm install
+```
+
+### Run
+```
+node server.js
+```
