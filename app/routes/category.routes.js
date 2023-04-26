@@ -10,7 +10,13 @@ module.exports = app => {
     router.get("/", category.getList);
 
     // Get by Id
-    router.get("/:id", category.getList);
+    router.get("/:id", category.getCategoryById);
+
+    // Update
+    router.put('/:id', category.update);
+
+    // Delete
+    router.delete('/:id', category.delete);
 
     app.use("/api/category", router);
   };

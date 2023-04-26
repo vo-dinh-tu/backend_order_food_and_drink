@@ -1,40 +1,43 @@
 module.exports = mongoose => {
-    var schema = mongoose.Schema(
-      {
-        name: {
-            type: String,
-            unique: true,
-        },
-        category_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Category'
-        },
-        detail: {
-            type: String,
-            null: true,
-        },
-        price: {
-            type: Number,
-        },
-        image: {
-            type: String,
-            null: true,
-        },
-        is_active: {
-            type: Boolean,
-            default: true
-        },
-
+  const productSchema = new mongoose.Schema(
+    {
+      name: {
+        type: String,
+        required: true,
       },
-      { timestamps: true }
-    );
-  
-    schema.method("toJSON", function() {
-      const { __v, _id, ...object } = this.toObject();
-      object.id = _id;
-      return object;
-    });
-  
-    const Product = mongoose.model("product", schema);
-    return Product;
-  };
+      category_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true,
+      },
+      detail: {
+        type: String,
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+      image: {
+        type: String,
+      },
+      is_active: {
+        type: Boolean,
+        default: true,
+      },
+    },
+    {
+      timestamps: true,
+      toJSON: {
+        transform: (doc, ret) => {
+          ret.id = ret._id;
+          delete ret._id;
+          delete ret.__v;
+        },
+      },
+    }
+  );
+
+  const Product = mongoose.model('product', productSchema);
+
+  return Product;
+};

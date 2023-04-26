@@ -1,7 +1,7 @@
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const db = require("../models");
-const Category = db.category;
+const Product = db.product;
 
 const DIR = 'static/images/';
 
@@ -30,9 +30,9 @@ const upload = multer({
 
 exports.create = async (req, res) => {
     try {
-        // Check category name in body
-        if (!req.body.name) {
-            return res.status(400).send({ message: "Category name is required." });
+        // Check body product
+        if (!req.body.name || !req.body.category_id || !req.body.price) {
+            return res.status(400).send({ message: "Name, category_id, and price are required fields." });
         }
 
         upload.single('image')(req, res, async (err) => {
@@ -41,14 +41,18 @@ exports.create = async (req, res) => {
                 return res.status(400).send({ message: err.message });
             }
 
-            // Create a new category
-            const category = new Category({
+            // Create a new product
+            const product = new Product({
                 name: req.body.name,
-                image: req.file ? req.file.filename : null
+                category_id: req.body.category_id,
+                detail: req.body.detail || null,
+                price: req.body.price,
+                image: req.file ? req.file.filename : null,
+                is_active: req.body.is_active || true
             });
 
-            const savedCategory = await category.save();
-            res.status(201).send(savedCategory);
+            const savedProduct = await product.save();
+            res.status(201).send(savedProduct);
         });
     } catch (error) {
         console.error(error);
@@ -58,25 +62,25 @@ exports.create = async (req, res) => {
 
 exports.getList = async (req, res) => {
     try {
-        const categories = await Category.find({});
-        res.status(200).json(categories);
+        const products = await Product.find({});
+        res.status(200).json(products);
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "An error occurred while processing your request." });
     }
 };
 
-exports.getCategoryById = async (req, res) => {
+exports.getProductById = async (req, res) => {
     try {
-        const category = await Category.findById(req.params.id);
-        if (!category) {
-            return res.status(404).send({ message: "Category not found." });
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).send({ message: "Product not found." });
         }
-        res.status(200).json(category);
+        res.status(200).json(product);
     } catch (error) {
         console.error(error);
         if (error.kind === "ObjectId") {
-            return res.status(404).send({ message: "Category not found." });
+            return res.status(404).send({ message: "Product not found." });
         }
         res.status(500).send({ message: "An error occurred while processing your request." });
     }
@@ -86,20 +90,23 @@ exports.update = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const category = await Category.findById(id);
-        if (!category) {
-            return res.status(404).send({ message: `Category with id ${id} not found` });
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).send({ message: `Product with id ${id} not found` });
         }
 
         // Update fields
-        category.name = req.body.name || category.name;
-        category.is_active = req.body.is_active || category.is_active;
+        product.name = req.body.name || product.name;
+        product.category_id = req.body.category_id || product.category_id;
+        product.detail = req.body.detail || product.detail;
+        product.price = req.body.price || product.price;
+        product.is_active = req.body.is_active || product.is_active;
 
         // Save changes
-        await category.save();
+        await product.save();
 
-        // Return updated category
-        res.send(category);
+        // Return updated product
+        res.send(product);
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "An error occurred while processing your request." });
@@ -110,11 +117,11 @@ exports.delete = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const deletedCategory = await Category.findByIdAndDelete(id);
-        if (!deletedCategory) {
-            return res.status(404).send({ message: "Category not found." });
+        const deletedProduct = await Product.findByIdAndDelete(id);
+        if (!deletedProduct) {
+            return res.status(404).send({ message: "Product not found." });
         }
-        res.status(200).send({ message: "Category deleted successfully." });
+        res.status(200).send({ message: "Product deleted successfully." });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "An error occurred while processing your request." });
