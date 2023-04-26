@@ -30,6 +30,7 @@ const upload = multer({
 
 exports.create = async (req, res) => {
     try {
+        // Check category name in body
         if (!req.body.name) {
             return res.status(400).send({ message: "Category name is required." });
         }
@@ -40,6 +41,7 @@ exports.create = async (req, res) => {
                 return res.status(400).send({ message: err.message });
             }
 
+            // Create a new category
             const category = new Category({
                 name: req.body.name,
                 image: req.file ? req.file.filename : null
@@ -50,6 +52,32 @@ exports.create = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
+        res.status(500).send({ message: "An error occurred while processing your request." });
+    }
+};
+
+exports.getList = async (req, res) => {
+    try {
+        const categories = await Category.find({});
+        res.status(200).json(categories);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "An error occurred while processing your request." });
+    }
+};
+
+exports.getCategoryById = async (req, res) => {
+    try {
+        const category = await Category.findById(req.params.id);
+        if (!category) {
+            return res.status(404).send({ message: "Category not found." });
+        }
+        res.status(200).json(category);
+    } catch (error) {
+        console.error(error);
+        if (error.kind === "ObjectId") {
+            return res.status(404).send({ message: "Category not found." });
+        }
         res.status(500).send({ message: "An error occurred while processing your request." });
     }
 };
