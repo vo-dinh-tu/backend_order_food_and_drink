@@ -4,6 +4,7 @@ const jwtVariable = require('../../variables/jwt');
 const { SALT_ROUNDS } = require('../../variables/auth');
 const db = require("../models");
 const Customer = db.customer;
+const Admin = db.admin;
 
 exports.login = async (req, res) => {
     if (!req.body.email || !req.body.password || !req.body.page) {
