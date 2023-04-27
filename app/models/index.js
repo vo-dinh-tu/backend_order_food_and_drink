@@ -10,5 +10,8 @@ db.customer = require("./customer.model.js")(mongoose);
 db.admin = require("./admin.model.js")(mongoose);
 db.category = require("./category.model.js")(mongoose);
 db.product = require("./product.model.js")(mongoose);
+db.city = require("./city.model.js")(mongoose);
+db.district = require("./district.model.js")(mongoose);
+db.ward = require("./ward.model.js")(mongoose);
 
 module.exports = db;
