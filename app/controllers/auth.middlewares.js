@@ -36,3 +36,23 @@ async function findCustomerByEmail(email) {
 	const customer = await Customer.findOne({ email });
 	return customer;
 }
+
+exports.checkAuth = async(req) => {
+	// Get access token from header
+	const accessTokenFromHeader = req.headers.authorization.split(' ');
+	if (!accessTokenFromHeader[1]) {
+		return null;
+	}
+
+	// Verify access token
+	const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || jwtVariable.accessTokenSecret;
+	const verified = await authMethod.verifyToken(accessTokenFromHeader[1], accessTokenSecret);
+	if (!verified) {
+		return null;
+	}
+
+	// Find customer by email
+	const customer = await findCustomerByEmail(verified.payload.email);
+
+	return customer
+}

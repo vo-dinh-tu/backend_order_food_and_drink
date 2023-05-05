@@ -8,7 +8,6 @@ module.exports = mongoose => {
       category_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        required: true,
       },
       detail: {
         type: String,

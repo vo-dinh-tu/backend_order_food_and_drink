@@ -41,6 +41,7 @@ exports.login = async (req, res) => {
                 age: data.age,
                 gender: data.gender,
                 avatar: data.avatar,
+                role: "user"
             };
             const accessToken = await authMethod.generateToken(
                 dataForAccessToken,
