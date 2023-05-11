@@ -4,7 +4,7 @@ const Product = db.product;
 const Cart = db.cart;
 const CartItem = db.cartItem;
 
-exports.addCart = async (req, res) => {
+exports.initOrRetrieveCart = async (req, res) => {
     try {
         const auth = await middlewares.checkAuth(req);
         if (!auth) {
@@ -12,24 +12,38 @@ exports.addCart = async (req, res) => {
         }
 
         const customer_id = auth.id;
-        let cart = await Cart.findOne({ customer_id, is_active: true });
+        const cart = await Cart.findOne({ customer_id: customer_id, is_active: true });
+
         if (!cart) {
-            cart = new Cart({
+            const newcart = new Cart({
                 customer_id,
                 total_item: 0,
                 total_price: 0,
+                is_active: true,
             });
-            await cart.save();
+            const savedCart = await newcart.save();
+            return res.status(200).send({ message: "New cart created", cart: savedCart });
+        } else {
+            return res.status(200).send({ message: "Cart retrieved successfully", cart: cart });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "An error occurred while processing your request." });
+    }
+};
+
+exports.addProductToCart = async (req, res) => {
+    try {
+        const auth = await middlewares.checkAuth(req);
+        if (!auth) {
+            return res.status(400).send({ message: "Authentication failed" });
         }
 
-        // var listItem = [
-        //     { id: 1, qty: 2, price: 10.99 },
-        //     { id: 2, qty: 1, price: 5.99 },
-        //     { id: 3, qty: 3, price: 8.99 }
-        // ];
+        const customer_id = auth.id;
+        const cart = await Cart.findOne({ customer_id: customer_id, is_active: true });
         const listItem = req.body.listItem;
         if (listItem && Array.isArray(listItem)) {
-            var cartItems = await Promise.all(listItem.map(async (item) => {
+            const cartItems = await Promise.all(listItem.map(async (item) => {
                 const { id, qty } = item;
                 const product = await Product.findById(id);
                 const price = product.price;
@@ -37,7 +51,7 @@ exports.addCart = async (req, res) => {
                 const cartItem = await CartItem.findOne({cart_id: cart.id, product_id: id});
                 if (cartItem) {
                     cartItem.qty += qty;
-                    cartItem.total_price = cartItem.price * cartItem.qty;
+                    cartItem.total_price = price * cartItem.qty;
                     await cartItem.save();
                     return cartItem;
                 } else {
@@ -53,12 +67,63 @@ exports.addCart = async (req, res) => {
                     return newCartItem.save();
                 }
             }));
-            cart.total_item += listItem.length;
-            cart.total_price += cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
-            await cart.save();
+            if (cartItems.length > 0) {
+                cart.total_item += cartItems.length;
+                cart.total_price = cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+                await cart.save();
+            }
         }
 
-        res.status(200).send({ message: "Cart initialized successfully" });
+        res.status(200).send({ message: "Add Product to Cart successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "An error occurred while processing your request." });
+    }
+};
+
+exports.updateCartItem = async (req, res) => {
+    try {
+        const auth = await middlewares.checkAuth(req);
+        if (!auth) {
+            return res.status(400).send({ message: "Authentication failed" });
+        }
+
+        const customer_id = auth.id;
+        const cart = await Cart.findOne({ customer_id: customer_id, is_active: true });
+        const listItem = req.body.listItem;
+        if (listItem && Array.isArray(listItem)) {
+            const cartItems = await Promise.all(listItem.map(async (item) => {
+                const { id, qty } = item;
+                const product = await Product.findById(id);
+                const price = product.price;
+
+                const cartItem = await CartItem.findOne({cart_id: cart.id, product_id: id});
+                if (cartItem) {
+                    cartItem.qty = qty;
+                    cartItem.total_price = price * cartItem.qty;
+                    await cartItem.save();
+                    return cartItem;
+                } else {
+                    const total_price = price * qty;
+                    const newCartItem = new CartItem({
+                        cart_id: cart.id,
+                        product_id: id,
+                        qty,
+                        price,
+                        total_price,
+                    });
+    
+                    return newCartItem.save();
+                }
+            }));
+            if (cartItems.length > 0) {
+                cart.total_item = cartItems.length;
+                cart.total_price = cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+                await cart.save();
+            }
+        }
+
+        res.status(200).send({ message: "Updated Cart successfully" });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "An error occurred while processing your request." });

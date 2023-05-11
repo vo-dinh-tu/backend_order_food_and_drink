@@ -3,11 +3,20 @@ module.exports = app => {
   
     var router = require("express").Router();
   
-    // add cart
-    router.post("/", cart.addCart);
+    // init cart
+    router.post("/", cart.initOrRetrieveCart);
 
-    // Get cart
+    // add p to cart
+    router.post("/add", cart.addProductToCart);
+
+    // update cart
+    router.post("/update", cart.updateCartItem);
+
+    // update cart
     router.get("/", cart.getCart);
+
+    // delete cart
+    router.delete("/", cart.deleteCartItem);
 
     app.use("/api/cart", router);
   };
