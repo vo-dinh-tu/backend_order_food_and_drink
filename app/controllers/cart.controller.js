@@ -59,6 +59,8 @@ exports.addProductToCart = async (req, res) => {
                     const newCartItem = new CartItem({
                         cart_id: cart.id,
                         product_id: id,
+                        product_name: product.name,
+                        product_image: product.image,
                         qty,
                         price,
                         total_price,
@@ -69,7 +71,7 @@ exports.addProductToCart = async (req, res) => {
             }));
             if (cartItems.length > 0) {
                 cart.total_item += cartItems.length;
-                cart.total_price = cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+                cart.total_price += cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
                 await cart.save();
             }
         }
@@ -108,6 +110,8 @@ exports.updateCartItem = async (req, res) => {
                     const newCartItem = new CartItem({
                         cart_id: cart.id,
                         product_id: id,
+                        product_name: product.name,
+                        product_image: product.image,
                         qty,
                         price,
                         total_price,

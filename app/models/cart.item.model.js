@@ -9,6 +9,12 @@ module.exports = mongoose => {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product',
         },
+        product_name: {
+          type: String,
+        },
+        product_image: {
+          type: String,
+        },
         qty: {
             type: Number,
         },
