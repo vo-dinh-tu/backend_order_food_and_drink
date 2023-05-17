@@ -121,11 +121,9 @@ exports.updateCartItem = async (req, res) => {
                 }
             }));
             const listCartItems = await CartItem.find({cart_id: cart.id})
-            if (listCartItems.length > 0) {
-                cart.total_item = listCartItems.length;
-                cart.total_price = listCartItems.reduce((acc, curr) => acc + curr.total_price, 0);
-                await cart.save();
-            }
+            cart.total_item = listCartItems.length;
+            cart.total_price = listCartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+            await cart.save();
         }
 
         res.status(200).send({ message: "Updated Cart successfully" });
@@ -176,11 +174,9 @@ exports.deleteCartItem = async (req, res) => {
         }
 
         const listCartItems = await CartItem.find({cart_id: cart.id})
-        if (listCartItems.length > 0) {
-            cart.total_item = listCartItems.length;
-            cart.total_price = listCartItems.reduce((acc, curr) => acc + curr.total_price, 0);
-            await cart.save();
-        }
+        cart.total_item = listCartItems.length;
+        cart.total_price = listCartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+        await cart.save();
 
         res.status(200).json({ message: "Cart item deleted successfully" });
     } catch (error) {
