@@ -120,9 +120,10 @@ exports.updateCartItem = async (req, res) => {
                     return newCartItem.save();
                 }
             }));
-            if (cartItems.length > 0) {
-                cart.total_item = cartItems.length;
-                cart.total_price = cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+            const listCartItems = await CartItem.find({cart_id: cart.id})
+            if (listCartItems.length > 0) {
+                cart.total_item = listCartItems.length;
+                cart.total_price = listCartItems.reduce((acc, curr) => acc + curr.total_price, 0);
                 await cart.save();
             }
         }
@@ -163,6 +164,8 @@ exports.deleteCartItem = async (req, res) => {
         if (!auth) {
             return res.status(401).json({ message: "Authentication failed" });
         }
+        const { id: customer_id } = auth;
+        const cart = await Cart.findOne({ customer_id, is_active: true });
 
         const cartItemId = req.params.id;
 
@@ -170,6 +173,13 @@ exports.deleteCartItem = async (req, res) => {
 
         if (!cartItem) {
             return res.status(404).json({ message: "Cart item not found" });
+        }
+
+        const listCartItems = await CartItem.find({cart_id: cart.id})
+        if (listCartItems.length > 0) {
+            cart.total_item = listCartItems.length;
+            cart.total_price = listCartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+            await cart.save();
         }
 
         res.status(200).json({ message: "Cart item deleted successfully" });
