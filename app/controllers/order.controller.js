@@ -26,7 +26,7 @@ exports.getListOrder = async (req, res) => {
             return res.status(401).json({ message: "Authentication failed" });
         }
 
-        const orders = await Order.find({});
+        var orders = auth.role == "user" ? await Order.find({customer_id: auth.id}) : await Order.find({});
         res.status(200).json( orders );
     } catch (error) {
         console.error(error);
