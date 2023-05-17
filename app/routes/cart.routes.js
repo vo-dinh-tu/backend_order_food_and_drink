@@ -16,7 +16,7 @@ module.exports = app => {
     router.get("/", cart.getCart);
 
     // delete cart
-    router.delete("/", cart.deleteCartItem);
+    router.delete("/:id", cart.deleteCartItem);
 
     app.use("/api/cart", router);
   };
