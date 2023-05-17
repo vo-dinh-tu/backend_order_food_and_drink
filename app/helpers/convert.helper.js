@@ -1,6 +1,4 @@
-const { orderItem } = require("../models");
 const db = require("../models");
-const Product = db.product;
 const Cart = db.cart;
 const CartItem = db.cartItem;
 const Order = db.order;

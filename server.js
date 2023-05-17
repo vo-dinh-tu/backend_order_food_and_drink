@@ -39,6 +39,7 @@ require("./app/routes/login.routes")(app);
 require("./app/routes/category.routes")(app);
 require("./app/routes/product.routes")(app);
 require("./app/routes/cart.routes")(app);
+require("./app/routes/order.routes")(app);
 require("./app/routes/paymnet.routes")(app);
 
 // set port, listen for requests
