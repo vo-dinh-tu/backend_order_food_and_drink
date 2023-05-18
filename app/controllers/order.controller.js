@@ -4,18 +4,19 @@ const Cart = db.cart;
 const CartItem = db.cartItem;
 const Order = db.order;
 const OrderItem = db.orderItem;
+const convertHelper = require("../helpers/convert.helper.js");
 
 exports.createCashOrder = async (req, res) => {
     try {
         const { cartId } = req.body;
         if (!cartId) {
-            return res.status(400).send({ message: "No cart ID provided." });
+            return res.status(400).send({ success: false, message: "No cart ID provided." });
         }
         const order = await convertHelper.convertCartToOrder(cartId, "cash");
-        res.status(200).send({ message: "Order created successfully.", order });
+        res.status(200).send({ success: true, message: "Order created successfully.", order });
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: "An error occurred while processing your request." });
+        res.status(500).send({ success: false, message: "An error occurred while processing your request." });
     }
 };
 
