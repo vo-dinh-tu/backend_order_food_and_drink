@@ -38,6 +38,18 @@ exports.convertCartToOrder = async (cartId, typeOrder) => {
             await newOrderItem.save();
         })
     );
+    cart.is_active = false;
+    await cart.save();
+
+    // create cart
+    const newCart = new Cart({
+        customer_id: cart.customer_id,
+        total_item: 0,
+        total_price: 0,
+        is_active: true,
+    });
+    await newCart.save();
+
 
     return saveNewOrder;
 };
