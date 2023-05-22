@@ -1,5 +1,6 @@
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
+const Recommender = require('../helpers/recommender.helper.js')
 const db = require("../models");
 const Product = db.product;
 
@@ -132,6 +133,21 @@ exports.delete = async (req, res) => {
             return res.status(404).send({ message: "Product not found." });
         }
         res.status(200).send({ message: "Product deleted successfully." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "An error occurred while processing your request." });
+    }
+};
+
+exports.recommender = async (req, res) => {
+    try {
+        const auth = await middlewares.checkAuth(req);
+        if (!auth) {
+            return res.status(401).json({ message: "Authentication failed" });
+        }
+
+        var topProduct = Recommender.recommender(auth);
+        res.status(200).send(topProduct);
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "An error occurred while processing your request." });
