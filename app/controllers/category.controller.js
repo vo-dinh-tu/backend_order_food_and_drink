@@ -93,7 +93,7 @@ exports.update = async (req, res) => {
 
         // Update fields
         category.name = req.body.name || category.name;
-        category.is_active = req.body.is_active || category.is_active;
+        category.is_active = req.body.is_active || !category.is_active;
 
         // Save changes
         await category.save();

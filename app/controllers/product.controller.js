@@ -111,7 +111,7 @@ exports.update = async (req, res) => {
         product.category_id = req.body.category_id || product.category_id;
         product.detail = req.body.detail || product.detail;
         product.price = req.body.price || product.price;
-        product.is_active = req.body.is_active || product.is_active;
+        product.is_active = req.body.is_active || !product.is_active;
 
         // Save changes
         await product.save();
