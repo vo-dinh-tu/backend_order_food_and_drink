@@ -51,8 +51,5 @@ exports.checkAuth = async(req) => {
 		return null;
 	}
 
-	// Find customer by email
-	const customer = await findCustomerByEmail(verified.payload.email);
-
-	return customer
+	return verified.payload
 }
