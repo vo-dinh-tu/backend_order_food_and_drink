@@ -32,15 +32,15 @@ const upload = multer({
 
 exports.create = async (req, res) => {
     try {
-        // Check body product
-        if (!req.body.name || !req.body.category_id || !req.body.price) {
-            return res.status(400).send({ message: "Name, category_id, and price are required fields." });
-        }
-
         upload.single('image')(req, res, async (err) => {
             if (err) {
                 console.error(err);
                 return res.status(400).send({ message: err.message });
+            }
+
+            // Check body product
+            if (!req.body.name || !req.body.category_id || !req.body.price) {
+                return res.status(400).send({ message: "Name, category_id, and price are required fields." });
             }
 
             // Create a new product
