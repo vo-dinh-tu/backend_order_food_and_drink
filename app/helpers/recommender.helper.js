@@ -195,13 +195,34 @@ class Table {
 exports.recommender = async (auth) => {
     var arrayData = [];
     var resultData = [];
+    var productQuantities = {};
+    var listPro = [];
     var listCustomers = await Customer.find({});
     await Promise.all(
         listCustomers.map(async (customer) => {
-            var cal = calculateTotalOrderedProducts(customer.id);
-            for (const c of cal) {
-                arrayData.push([c.product_id, customer.id, c.totalQuantity]);
+            var orders = await Order.find({ customer_id: customer.id });
+
+            for (const order of orders) {
+                var orderItems = await OrderItem.find({ order_id: order.id });
+
+                for (const orderItem of orderItems) {
+                    var productId = orderItem.product_id.toString();
+
+                    if (!productQuantities[productId]) {
+                        productQuantities[productId] = 0;
+                    }
+
+                    productQuantities[productId] += orderItem.qty; // Cộng dồn số lượng sản phẩm
+                }
             }
+            for (const productId in productQuantities) {
+                const quantity = productQuantities[productId];
+                arrayData.push([productId, customer.id, quantity]);
+            }
+            // var cal = await calculateTotalOrderedProducts(customer.id);
+            // for (const c of cal) {
+            //     arrayData.push([c.product_id, customer.id, c.totalQuantity]);
+            // }
         })
     );
 
@@ -224,8 +245,8 @@ exports.recommender = async (auth) => {
 };
 
 
-function calculateTotalOrderedProducts(customerId) {
-    const aggregateResult = Order.aggregate([
+async function calculateTotalOrderedProducts(customerId) {
+    const aggregateResult = await Order.aggregate([
         {
             $match: { customer_id: customerId }
         },
@@ -242,18 +263,12 @@ function calculateTotalOrderedProducts(customerId) {
         },
         {
             $group: {
-                _id: '$order_item.product_id',
+                _id: '$customer_id',
                 totalQuantity: { $sum: '$order_item.qty' }
             }
-        },
-        {
-            $project: {
-                _id: 0,
-                product_id: '$_id',
-                totalQuantity: 1
-            }
         }
-    ]);
+    ]).exec();
 
     return aggregateResult;
 };
+

@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const Recommender = require('../helpers/recommender.helper.js')
 const db = require("../models");
 const Product = db.product;
+const middlewares = require("./auth.middlewares");
 
 const DIR = 'static/images/';
 
@@ -146,7 +147,7 @@ exports.recommender = async (req, res) => {
             return res.status(401).json({ message: "Authentication failed" });
         }
 
-        var topProduct = Recommender.recommender(auth);
+        var topProduct = await Recommender.recommender(auth);
         res.status(200).send(topProduct);
     } catch (error) {
         console.error(error);

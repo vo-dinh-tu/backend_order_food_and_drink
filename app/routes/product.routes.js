@@ -2,6 +2,9 @@ module.exports = app => {
     const product = require("../controllers/product.controller.js");
   
     var router = require("express").Router();
+
+    // Recommender
+    router.get("/recommender", product.recommender);
   
     // Create
     router.post("/", product.create);
