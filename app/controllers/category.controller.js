@@ -30,15 +30,15 @@ const upload = multer({
 
 exports.create = async (req, res) => {
     try {
-        // Check category name in body
-        if (!req.body.name) {
-            return res.status(400).send({ message: "Category name is required." });
-        }
-
         upload.single('image')(req, res, async (err) => {
             if (err) {
                 console.error(err);
                 return res.status(400).send({ message: err.message });
+            }
+
+            // Check category name in body
+            if (!req.body.name) {
+                return res.status(400).send({ message: "Category name is required." });
             }
 
             // Create a new category
