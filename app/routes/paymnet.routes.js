@@ -6,6 +6,9 @@ module.exports = app => {
     // Create
     router.post("/", payment.createPaymentUrl);
 
+    // return
+    router.get("/vnpay_return", payment.vnpayReturn);
+
     app.use("/api/payment", router);
   };
   
