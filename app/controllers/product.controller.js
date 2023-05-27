@@ -148,7 +148,10 @@ exports.recommender = async (req, res) => {
         }
 
         var topProduct = await Recommender.recommender(auth);
-        res.status(200).send(topProduct);
+        var listProductId = topProduct.map(item => item[0]);
+
+        var result = await Product.find({ _id: { $in: listProductId } });
+        res.status(200).send(result);
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "An error occurred while processing your request." });

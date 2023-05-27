@@ -2,6 +2,7 @@ const db = require("../models");
 const Order = db.order;
 const OrderItem = db.orderItem;
 const Customer = db.customer;
+const Product = db.product;
 
 class Recommender {
     constructor(kDim = 2, alpha = 0.01, lambda = 0.01, iterations = 100) {
@@ -200,8 +201,12 @@ exports.recommender = async (auth) => {
     var listCustomers = await Customer.find({});
     await Promise.all(
         listCustomers.map(async (customer) => {
-            var orders = await Order.find({ customer_id: customer.id });
+            var products = await Product.find({});
+            for (const product of products) {
+                productQuantities[product.id] = 0;
+            }
 
+            var orders = await Order.find({ customer_id: customer.id });
             for (const order of orders) {
                 var orderItems = await OrderItem.find({ order_id: order.id });
 
@@ -212,9 +217,10 @@ exports.recommender = async (auth) => {
                         productQuantities[productId] = 0;
                     }
 
-                    productQuantities[productId] += orderItem.qty; // Cộng dồn số lượng sản phẩm
+                    productQuantities[productId] += orderItem.qty;
                 }
             }
+
             for (const productId in productQuantities) {
                 const quantity = productQuantities[productId];
                 arrayData.push([productId, customer.id, quantity]);
