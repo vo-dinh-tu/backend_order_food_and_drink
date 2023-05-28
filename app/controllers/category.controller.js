@@ -86,20 +86,27 @@ exports.update = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const category = await Category.findById(id);
-        if (!category) {
-            return res.status(404).send({ message: `Category with id ${id} not found` });
-        }
+        upload.single('image')(req, res, async (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(400).send({ message: err.message });
+            }
 
-        // Update fields
-        category.name = req.body.name || category.name;
-        category.is_active = req.body.is_active || !category.is_active;
+            const category = await Category.findById(id);
+            if (!category) {
+                return res.status(404).send({ message: `Category with id ${id} not found` });
+            }
 
-        // Save changes
-        await category.save();
+            // Update fields
+            category.name = req.body.name || category.name;
+            category.image = req.file ? req.file.filename : category.iamge;
 
-        // Return updated category
-        res.send(category);
+            // Save changes
+            await category.save();
+
+            // Return updated category
+            res.send(category);
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "An error occurred while processing your request." });
