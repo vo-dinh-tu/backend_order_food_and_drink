@@ -18,13 +18,13 @@ exports.isAuth = async (req, res, next) => {
 			return res.status(401).send({ error: 'Invalid access token.' });
 		}
 
-		// Find customer by email
-		const customer = await findCustomerByEmail(verified.payload.email);
-		if (!customer) {
-			return res.status(401).send({ error: `Customer not found with email ${verified.payload.email}.` });
-		}
+		// // Find customer by email
+		// const customer = await findCustomerByEmail(verified.payload.email);
+		// if (!customer) {
+		// 	return res.status(401).send({ error: `Customer not found with email ${verified.payload.email}.` });
+		// }
 
-		res.send(customer);
+		res.send(verified.payload);
 		next();
 	} catch (error) {
 		console.error(error);
