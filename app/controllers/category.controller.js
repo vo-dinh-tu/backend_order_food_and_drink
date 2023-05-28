@@ -99,7 +99,7 @@ exports.update = async (req, res) => {
 
             // Update fields
             category.name = req.body.name || category.name;
-            category.image = req.file ? req.file.filename : category.iamge;
+            category.image = req.file ? req.file.filename : category.image;
 
             // Save changes
             await category.save();
