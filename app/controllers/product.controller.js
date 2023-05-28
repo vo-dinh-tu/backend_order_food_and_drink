@@ -102,23 +102,30 @@ exports.update = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const product = await Product.findById(id);
-        if (!product) {
-            return res.status(404).send({ message: `Product with id ${id} not found` });
-        }
+        upload.single('image')(req, res, async (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(400).send({ message: err.message });
+            }
 
-        // Update fields
-        product.name = req.body.name || product.name;
-        product.category_id = req.body.category_id || product.category_id;
-        product.detail = req.body.detail || product.detail;
-        product.price = req.body.price || product.price;
-        product.is_active = req.body.is_active || !product.is_active;
+            const product = await Product.findById(id);
+            if (!product) {
+                return res.status(404).send({ message: `Product with id ${id} not found` });
+            }
 
-        // Save changes
-        await product.save();
+            // Update fields
+            product.name = req.body.name || product.name;
+            product.category_id = req.body.category_id || product.category_id;
+            product.detail = req.body.detail || product.detail;
+            product.price = req.body.price || product.price;
+            product.image = req.file ? req.file.filename : product.image;
 
-        // Return updated product
-        res.send(product);
+            // Save changes
+            await product.save();
+
+            // Return updated product
+            res.send(product);
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "An error occurred while processing your request." });
