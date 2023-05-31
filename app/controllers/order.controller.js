@@ -41,15 +41,15 @@ exports.getOrder = async (req, res) => {
         if (!auth) {
             return res.status(401).json({ message: "Authentication failed" });
         }
-        if (!req.param.orderId) {
+        if (!req.params.orderId) {
             return res.status(400).send({ message: "No order ID provided." });
         }
 
-        const order = await Order.findById(req.param.orderId);
+        const order = await Order.findById(req.params.orderId);
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }
-        const orderItems = await OrderItem.find({order_id: req.param.orderId});
+        const orderItems = await OrderItem.find({order_id: req.params.orderId});
         res.status(200).json({ order, orderItems });
     } catch (error) {
         console.error(error);
