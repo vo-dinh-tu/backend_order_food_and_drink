@@ -27,6 +27,10 @@ module.exports = mongoose => {
             type: String,
             null: true,
         },
+        socket_id: {
+            type: String,
+            null: true,
+        },
 
       },
       { timestamps: true }

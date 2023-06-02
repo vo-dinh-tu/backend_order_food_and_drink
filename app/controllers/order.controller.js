@@ -5,6 +5,9 @@ const CartItem = db.cartItem;
 const Order = db.order;
 const OrderItem = db.orderItem;
 const convertHelper = require("../helpers/convert.helper.js");
+const listSocket = require("../socket");
+const UpdateOrder = listSocket.updateOrder;
+const Customer = db.customer;
 
 exports.createCashOrder = async (req, res) => {
     try {
@@ -28,6 +31,8 @@ exports.getListOrder = async (req, res) => {
         }
 
         var orders = auth.role == "user" ? await Order.find({customer_id: auth.id}) : await Order.find({});
+        orders.sort((a, b) => b.created_at - a.created_at);
+        orders.reverse();
         res.status(200).json( orders );
     } catch (error) {
         console.error(error);
@@ -76,6 +81,13 @@ exports.updateStatusOrder = async (req, res) => {
         }
         order.status = req.body.status;
         await order.save();
+
+        const userId = order.customer_id;
+
+        const customer = await Customer.findById(userId);
+        if (customer.socket_id) {
+            UpdateOrder.to(customer.socket_id).emit('sendStatusOrder', order);
+        }
         res.status(200).json({ message: "Updated status." });
     } catch (error) {
         console.error(error);

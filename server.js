@@ -44,6 +44,8 @@ require("./app/routes/cart.routes")(app);
 require("./app/routes/order.routes")(app);
 require("./app/routes/paymnet.routes")(app);
 
+const socket = require("./app/socket");
+
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
