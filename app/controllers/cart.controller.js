@@ -43,7 +43,7 @@ exports.addProductToCart = async (req, res) => {
         const cart = await Cart.findOne({ customer_id: customer_id, is_active: true });
         const listItem = req.body.listItem;
         if (listItem && Array.isArray(listItem)) {
-            const cartItems = await Promise.all(listItem.map(async (item) => {
+            await Promise.all(listItem.map(async (item) => {
                 const { id, qty } = item;
                 const product = await Product.findById(id);
                 const price = product.price;
@@ -69,12 +69,15 @@ exports.addProductToCart = async (req, res) => {
                     return newCartItem.save();
                 }
             }));
-            if (cartItems.length > 0) {
-                cart.total_item += cartItems.length;
-                cart.total_price += cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
-                await cart.save();
-            }
         }
+        const cartItems = await CartItem.find({cart_id: cart.id});
+
+        if (cartItems.length > 0) {
+            cart.total_item = cartItems.length;
+            cart.total_price = cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+            await cart.save();
+        }
+
 
         res.status(200).send({ message: "Add Product to Cart successfully" });
     } catch (error) {
