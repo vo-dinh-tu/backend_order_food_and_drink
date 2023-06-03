@@ -3,6 +3,7 @@ const Cart = db.cart;
 const CartItem = db.cartItem;
 const Order = db.order;
 const OrderItem = db.orderItem;
+const Customer = db.customer;
 
 exports.convertCartToOrder = async (cartId, typeOrder) => {
     const cart = await Cart.findById(cartId);
@@ -10,9 +11,18 @@ exports.convertCartToOrder = async (cartId, typeOrder) => {
         return false;
     }
 
+    const customer = await Customer.findById(cart.customer_id);
+    if (!customer) {
+        return false;
+    }
+
     const newOrder = new Order({
         cart_id: cart.id,
         customer_id: cart.customer_id,
+        first_name: customer.first_name,
+        last_name: customer.last_name,
+        phone: customer.phone,
+        email: customer.email,
         total_item: cart.total_item,
         total_price: cart.total_price,
         status: "NEW",

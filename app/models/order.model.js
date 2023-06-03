@@ -9,6 +9,18 @@ module.exports = mongoose => {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Customer',
         },
+        first_name: {
+            type: String,
+        },
+        last_name: {
+            type: String,
+        },
+        phone: {
+            type: String,
+        },
+        email: {
+            type: String,
+        },
         total_item: {
             type: Number,
         },
