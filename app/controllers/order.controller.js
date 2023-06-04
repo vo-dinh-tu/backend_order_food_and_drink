@@ -30,10 +30,25 @@ exports.getListOrder = async (req, res) => {
             return res.status(401).json({ message: "Authentication failed" });
         }
 
-        var orders = auth.role == "user" ? await Order.find({customer_id: auth.id}) : await Order.find({});
+        var orders = auth.role == "user" ? await Order.find({ customer_id: auth.id }) : await Order.find({});
         orders.sort((a, b) => b.created_at - a.created_at);
         orders.reverse();
-        res.status(200).json( orders );
+
+        if (auth.role == "user") {
+            const orderList = await Promise.all(
+                orders.map(async (order) => {
+                    const orderItems = await OrderItem.find({ order_id: order.id });
+                    const orderWithItems = {
+                        order,
+                        orderItems,
+                    };
+                    return orderWithItems;
+                })
+            );
+            res.status(200).json(orderList);
+        } else {
+            res.status(200).json(orders);
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "An error occurred while processing your request." });
@@ -54,7 +69,7 @@ exports.getOrder = async (req, res) => {
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }
-        const orderItems = await OrderItem.find({order_id: req.params.orderId});
+        const orderItems = await OrderItem.find({ order_id: req.params.orderId });
         res.status(200).json({ order, orderItems });
     } catch (error) {
         console.error(error);
