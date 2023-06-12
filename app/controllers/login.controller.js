@@ -35,8 +35,8 @@ exports.login = async (req, res) => {
             const dataForAccessToken = {
                 id: data.id,
                 email: data.email,
-                firstName: data.first_name,
-                lastName: data.last_name,
+                first_name: data.first_name,
+                last_name: data.last_name,
                 phone: data.phone,
                 age: data.age,
                 gender: data.gender,
