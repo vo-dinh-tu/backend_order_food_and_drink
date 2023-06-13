@@ -24,5 +24,8 @@ module.exports = app => {
     // Delete
     router.delete('/:id', product.delete);
 
+    // search
+    router.get("/search/:key", product.search);
+
     app.use("/api/product", router);
   };

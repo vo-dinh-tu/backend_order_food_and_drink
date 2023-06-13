@@ -164,3 +164,15 @@ exports.recommender = async (req, res) => {
         res.status(500).send({ message: "An error occurred while processing your request." });
     }
 };
+
+exports.search = async (req, res) => {
+    try {
+        const keyValue = req.params.key;
+        const regex = new RegExp(keyValue, 'i');
+        var result = await Product.find({name: regex});
+        res.status(200).send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "An error occurred while processing your request." });
+    }
+};
