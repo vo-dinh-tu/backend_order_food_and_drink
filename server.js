@@ -43,6 +43,7 @@ require("./app/routes/product.routes")(app);
 require("./app/routes/cart.routes")(app);
 require("./app/routes/order.routes")(app);
 require("./app/routes/paymnet.routes")(app);
+require("./app/routes/revenue.routes")(app);
 
 const socket = require("./app/socket");
 
