@@ -77,7 +77,7 @@ exports.calcu = async (req, res) => {
                 result.push([arrayDate[i],totalRevenue]);
             }
     
-            res.status(200).send({ result });
+            res.status(200).send({ typeRevenue, result });
         }
     } catch (error) {
         return res.status(500).json({ error: "Internal server error" });
