@@ -32,8 +32,6 @@ exports.calcu = async (req, res) => {
     
                 result.push([arrayDate[i],totalRevenue]);
             }
-    
-            res.status(200).send({ result });
         } else if (typeRevenue === "Month") {
             for (let i = 0; i < arrayDate.length; i++) {
                 const startDate = new Date(arrayDate[i]); 
@@ -54,8 +52,6 @@ exports.calcu = async (req, res) => {
     
                 result.push([arrayDate[i],totalRevenue]);
             }
-    
-            res.status(200).send({ result });
         } else if (typeRevenue === "Year") {
             for (let i = 0; i < arrayDate.length; i++) {
                 const startDate = new Date(arrayDate[i]); 
@@ -76,9 +72,8 @@ exports.calcu = async (req, res) => {
     
                 result.push([arrayDate[i],totalRevenue]);
             }
-    
-            res.status(200).send({ typeRevenue, result });
         }
+        res.status(200).send({ typeRevenue, result });
     } catch (error) {
         return res.status(500).json({ error: "Internal server error" });
     }
