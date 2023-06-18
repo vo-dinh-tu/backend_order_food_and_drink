@@ -35,11 +35,10 @@ exports.calcu = async (req, res) => {
     
             res.status(200).send({ result });
         } else if (typeRevenue === "Month") {
-            for (let i = 0; i < arrayMonth.length; i++) {
-                const year = parseInt(arrayMonth[i].split("-")[0]);
-                const month = parseInt(arrayMonth[i].split("-")[1]);
-                const startDate = new Date(year, month - 1, 1); 
-                const endDate = new Date(year, month, 1);
+            for (let i = 0; i < arrayDate.length; i++) {
+                const startDate = new Date(arrayDate[i]); 
+                const endDate = new Date(arrayDate[i]);
+                endDate.setMonth(endDate.getMonth() + 1);
         
                 const orders = await Order.find({
                     createdAt: {
@@ -53,14 +52,15 @@ exports.calcu = async (req, res) => {
                     totalRevenue += order.total_price;
                 }
     
-                result.push([arrayMonth[i],totalRevenue]);
+                result.push([arrayDate[i],totalRevenue]);
             }
     
             res.status(200).send({ result });
         } else if (typeRevenue === "Year") {
-            for (let i = 0; i < arrayYear.length; i++) {
-                const startDate = new Date(parseInt(arrayYear[i]), 0, 1);
-                const endDate = new Date(parseInt(arrayYear[i]) + 1, 0, 1);
+            for (let i = 0; i < arrayDate.length; i++) {
+                const startDate = new Date(arrayDate[i]); 
+                const endDate = new Date(arrayDate[i]);
+                endDate.setFullYear(endDate.getFullYear() + 1);
         
                 const orders = await Order.find({
                     createdAt: {
@@ -74,7 +74,7 @@ exports.calcu = async (req, res) => {
                     totalRevenue += order.total_price;
                 }
     
-                result.push([arrayYear[i],totalRevenue]);
+                result.push([arrayDate[i],totalRevenue]);
             }
     
             res.status(200).send({ result });
