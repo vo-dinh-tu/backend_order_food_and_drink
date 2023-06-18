@@ -4,13 +4,7 @@ module.exports = app => {
     var router = require("express").Router();
   
     // date
-    router.post("/date", revenue.byDate);
-
-    // month
-    router.post("/month", revenue.byMonth);
-
-    // year
-    router.post("/year", revenue.byYear);
+    router.post("/calc", revenue.calcu);
 
     app.use("/api/revenue", router);
   };

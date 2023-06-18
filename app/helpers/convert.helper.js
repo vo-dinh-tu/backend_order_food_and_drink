@@ -63,3 +63,40 @@ exports.convertCartToOrder = async (cartId, typeOrder) => {
 
     return saveNewOrder;
 };
+
+exports.getArrayDate = async (startDate, endDate, typeGet) => {
+    const arrayDate = [];
+    if (typeGet === "Date") {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
+            arrayDate.push(new Date(date));
+        }
+    } else if (typeGet === "Month") {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        let currentMonth = start.getMonth();
+        let currentYear = start.getFullYear();
+
+        while (currentYear < end.getFullYear() || (currentYear === end.getFullYear() && currentMonth <= end.getMonth())) {
+            arrayDate.push(new Date(currentYear, currentMonth));
+            if (currentMonth === 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+        }
+    } else if (typeGet === "Year") {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        let currentYear = start.getFullYear();
+
+        while (currentYear <= end.getFullYear()) {
+            arrayDate.push(new Date(currentYear, 0));
+            currentYear++;
+        }
+    }
+
+    return arrayDate;
+};
