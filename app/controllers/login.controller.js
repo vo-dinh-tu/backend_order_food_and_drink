@@ -262,3 +262,51 @@ exports.refreshToken = async (req, res) => {
     }
 };
 
+exports.createAdmin = async (req, res) => {
+    try {
+        // Check if request body is empty
+        if (!req.body) {
+            return res.status(400).send({ message: "Content can not be empty!" });
+        }
+
+        // Find account by email
+        const admin = await Admin.findOne({ email: req.body.email });
+
+        if (admin) {
+            return res.status(401).send({
+                message: `Admin already exists with email ${req.body.email}.`,
+            });
+        }
+
+        // Check password confirmation
+        if (req.body.password !== req.body.confirm_password) {
+            return res.status(400).send({
+                message: "Password confirmation does not match!",
+            });
+        }
+
+        // Hash password
+        const hashPassword = bcrypt.hashSync(req.body.password, SALT_ROUNDS);
+
+        // Admin a new customer
+        const newAdmin = new Admin({
+            email: req.body.email,
+            hash_password: hashPassword,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            phone: req.body.phone,
+            gender: req.body.gender,
+            role: req.body.role
+        });
+
+        // Save the new customer to the database
+        const savedAdmin = await newAdmin.save();
+
+        res.send(savedAdmin);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({
+            message: "An error occurred while processing your request.",
+        });
+    }
+};
