@@ -215,9 +215,9 @@ exports.recommender = async (auth) => {
 
                     if (!productQuantities[productId]) {
                         productQuantities[productId] = 0;
+                    } else {
+                        productQuantities[productId] += orderItem.qty;
                     }
-
-                    productQuantities[productId] += orderItem.qty;
                 }
             }
 
