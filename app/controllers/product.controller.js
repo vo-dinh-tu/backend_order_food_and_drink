@@ -157,7 +157,9 @@ exports.recommender = async (req, res) => {
         var topProduct = await Recommender.recommender(auth);
         var listProductId = topProduct.map(item => item[0]);
 
-        var result = await Product.find({ _id: { $in: listProductId } });
+        var shuffleListProductId = shuffleArray(listProductId);
+
+        var result = await Product.find({ _id: { $in: shuffleListProductId } });
         res.status(200).send(result);
     } catch (error) {
         console.error(error);
@@ -176,3 +178,11 @@ exports.search = async (req, res) => {
         res.status(500).send({ message: "An error occurred while processing your request." });
     }
 };
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
