@@ -124,7 +124,12 @@ exports.exportCSV = async (req, res) => {
                     });
 
                 }, 30000);
-                res.download(filePath);
+                res.set({
+                    'Content-Type': 'application/octet-stream',
+                    'Content-Disposition': 'attachment; filename=file.txt', // Tên tệp tin khi tải xuống
+                });
+                const fileStream = fs.createReadStream(filePath);
+                fileStream.pipe(res);
             }
         })
     } catch (error) {
