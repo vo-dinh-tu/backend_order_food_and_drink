@@ -1,4 +1,4 @@
-const json2csv = require('json2csv').parse;
+const { parse } = require('json2csv');
 const path = require('path');
 const fs = require('fs');
 const db = require("../models");
@@ -101,15 +101,16 @@ exports.exportCSV = async (req, res) => {
         const filePath = path.join("static", "csv-" + dateTime + ".csv");
 
         const fieldName = ["ID", "First Name", "Last Name", "Phone", "Email", "Status", "Total Price"];
-        const fields = [];
+        const opts = { fieldName };
+        const fields = [["ID", "First Name", "Last Name", "Phone", "Email", "Status", "Total Price"]];
         let totalRevenue = 0;
         for (const order of orders) {
             totalRevenue += order.total_price;
             var newField = [order.id, order.first_name, order.last_name, order.phone, order.email, order.status, order.total_price];
             fields.push(newField);
         }
-        fields.push(["", "", "", "", "", "", totalRevenue])
-        let csv = json2csv(JSON.parse(JSON.stringify(fields)), { fieldName });
+        fields.push(["", "", "", "", "", "", totalRevenue]);
+        let csv = parse(fields,opts);
         fs.writeFile(filePath, csv, function (err) {
             if (err) {
                 return res.json(err).status(500);
