@@ -124,12 +124,8 @@ exports.exportCSV = async (req, res) => {
                     });
 
                 }, 30000);
-                res.set({
-                    'Content-Type': 'application/octet-stream',
-                    'Content-Disposition': 'attachment; filename=file.txt', // Tên tệp tin khi tải xuống
-                });
-                const fileStream = fs.createReadStream(filePath);
-                fileStream.pipe(res);
+                res.attachment('export.csv');
+                res.status(200).send(csv);
             }
         })
     } catch (error) {
