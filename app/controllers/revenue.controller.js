@@ -86,7 +86,6 @@ exports.calcu = async (req, res) => {
 
 exports.exportCSV = async (req, res) => {
     try {
-        const typeRevenue = req.body.typeRevenue;
         const startDate = new Date(req.body.startDate);
         const endDate = new Date(req.body.endDate);
         const orders = await Order.find({
