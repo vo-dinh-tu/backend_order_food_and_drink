@@ -98,7 +98,7 @@ exports.exportCSV = async (req, res) => {
 
         const dateTime = new Date().toISOString().slice(-24).replace(/\D/g, '').slice(0, 14);
 
-        const filePath = path.join("http://localhost:5173/", "static", "csv-" + dateTime + ".csv");
+        const filePath = path.join("static", "csv-" + dateTime + ".csv");
 
         const fieldName = ["ID", "First Name", "Last Name", "Phone", "Email", "Status", "Total Price"];
         const fields = [];
