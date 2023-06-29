@@ -6,6 +6,9 @@ module.exports = app => {
     // date
     router.post("/calc", revenue.calcu);
 
+    // export
+    router.post("/exportCSV", revenue.exportCSV);
+
     app.use("/api/revenue", router);
   };
   
