@@ -8,6 +8,7 @@ const convertHelper = require("../helpers/convert.helper.js");
 const listSocket = require("../socket");
 const UpdateOrder = listSocket.updateOrder;
 const Customer = db.customer;
+const Admin = db.admin;
 
 exports.createCashOrder = async (req, res) => {
     try {
@@ -16,6 +17,14 @@ exports.createCashOrder = async (req, res) => {
             return res.status(400).send({ success: false, message: "No cart ID provided." });
         }
         const order = await convertHelper.convertCartToOrder(cartId, "cash");
+
+        const listOrder = await Order.find({});
+        const admin = await Admin.find({});
+        for (const ad of admin ) {
+            if (ad.socket_id) {
+                UpdateOrder.to(ad.socket_id).emit('sendListOrder', listOrder);
+            }
+        }
         res.status(200).send({ success: true, message: "Order created successfully.", order });
     } catch (error) {
         console.error(error);

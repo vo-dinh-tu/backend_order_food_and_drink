@@ -17,6 +17,9 @@ socketIo.on("connection", (socket) => {
     socket.on('userConnect', (userId) => {
         actionHelper.updateSocket(userId, socket.id);
     });
+    socket.on('adminConnect', (userId) => {
+        actionHelper.updateAdminSocket(userId, socket.id);
+    });
 });
 
 // run socket

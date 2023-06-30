@@ -225,10 +225,6 @@ exports.recommender = async (auth) => {
                 const quantity = productQuantities[productId];
                 arrayData.push([productId, customer.id, quantity]);
             }
-            // var cal = await calculateTotalOrderedProducts(customer.id);
-            // for (const c of cal) {
-            //     arrayData.push([c.product_id, customer.id, c.totalQuantity]);
-            // }
         })
     );
 
@@ -248,33 +244,5 @@ exports.recommender = async (auth) => {
     customerData.sort((a, b) => b[2] - a[2]);
     const topRecommendations = customerData.slice(0, 8);
     return topRecommendations;
-};
-
-
-async function calculateTotalOrderedProducts(customerId) {
-    const aggregateResult = await Order.aggregate([
-        {
-            $match: { customer_id: customerId }
-        },
-        {
-            $lookup: {
-                from: 'order_item',
-                localField: '_id',
-                foreignField: 'order_id',
-                as: 'order_item'
-            }
-        },
-        {
-            $unwind: '$order_item'
-        },
-        {
-            $group: {
-                _id: '$customer_id',
-                totalQuantity: { $sum: '$order_item.qty' }
-            }
-        }
-    ]).exec();
-
-    return aggregateResult;
 };
 

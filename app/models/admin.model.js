@@ -30,6 +30,10 @@ module.exports = mongoose => {
             role: {
                 type: String,
             },
+            socket_id: {
+                type: String,
+                null: true,
+            },
 
         },
         { timestamps: true }
