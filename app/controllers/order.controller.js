@@ -18,13 +18,6 @@ exports.createCashOrder = async (req, res) => {
         }
         const order = await convertHelper.convertCartToOrder(cartId, "cash");
 
-        const listOrder = await Order.find({});
-        const admin = await Admin.find({});
-        for (const ad of admin ) {
-            if (ad.socket_id) {
-                UpdateOrder.to(ad.socket_id).emit('sendListOrder', listOrder);
-            }
-        }
         res.status(200).send({ success: true, message: "Order created successfully.", order });
     } catch (error) {
         console.error(error);
@@ -112,7 +105,28 @@ exports.updateStatusOrder = async (req, res) => {
         if (customer.socket_id) {
             UpdateOrder.to(customer.socket_id).emit('sendStatusOrder', order);
         }
+        const listOrder = await Order.find({});
+        const admin = await Admin.find({});
+        for (const ad of admin ) {
+            if (ad.socket_id) {
+                UpdateOrder.to(ad.socket_id).emit('sendListOrder', listOrder);
+            }
+        }
         res.status(200).json({ message: "Updated status." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "An error occurred while processing your request." });
+    }
+};
+
+exports.updateIsPayment = async (req, res) => {
+    try {
+        const isPayment = req.body.isPayment;
+        const orderId = req.body.orderId;
+        const order = await Order.findById(orderId);
+        order.is_payment = isPayment;
+        await order.save();
+        res.status(200).json({ order });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "An error occurred while processing your request." });

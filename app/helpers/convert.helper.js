@@ -4,6 +4,9 @@ const CartItem = db.cartItem;
 const Order = db.order;
 const OrderItem = db.orderItem;
 const Customer = db.customer;
+const Admin = db.admin;
+const listSocket = require("../socket");
+const UpdateOrder = listSocket.updateOrder;
 
 exports.convertCartToOrder = async (cartId, typeOrder) => {
     const cart = await Cart.findById(cartId);
@@ -31,6 +34,14 @@ exports.convertCartToOrder = async (cartId, typeOrder) => {
         is_active: true,
     });
     const saveNewOrder = await newOrder.save();
+
+    const listOrder = await Order.find({});
+    const admin = await Admin.find({});
+    for (const ad of admin ) {
+        if (ad.socket_id) {
+            UpdateOrder.to(ad.socket_id).emit('sendListOrder', listOrder);
+        }
+    }
 
     const cartItems = await CartItem.find({ cart_id: cartId });
     await Promise.all(

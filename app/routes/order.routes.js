@@ -15,6 +15,9 @@ module.exports = app => {
     // update status order
     router.post("/status", order.updateStatusOrder);
 
+    // update status payment
+    router.post("/status/payment", order.updateIsPayment);
+
     app.use("/api/order", router);
   };
   
