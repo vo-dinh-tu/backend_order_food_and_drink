@@ -17,5 +17,6 @@ db.cart = require("./cart.model.js")(mongoose);
 db.cartItem = require("./cart.item.model.js")(mongoose);
 db.order = require("./order.model.js")(mongoose);
 db.orderItem = require("./order.item.model.js")(mongoose);
+db.supplyItem = require("./supply.item.model.js")(mongoose);
 
 module.exports = db;
