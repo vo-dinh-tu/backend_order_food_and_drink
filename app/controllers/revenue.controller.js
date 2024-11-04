@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const db = require("../models");
 const Order = db.order;
+const Supply = db.supplyItem;
 const ConvertHelper = require("../helpers/convert.helper.js");
 
 exports.calcu = async (req, res) => {
@@ -28,12 +29,23 @@ exports.calcu = async (req, res) => {
                     status: "COMPLETED"
                 });
 
+                const supplyItems = await Supply.find({
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    },
+                });
+                let expenditure = 0;
+                for (const supplyItem of supplyItems) {
+                    expenditure += supplyItem.price * supplyItem.quantity;
+                }
+
                 let totalRevenue = 0;
                 for (const order of orders) {
                     totalRevenue += order.total_price;
                 }
 
-                result.push([arrayDate[i], totalRevenue]);
+                result.push([arrayDate[i], totalRevenue, expenditure]);
             }
         } else if (typeRevenue === "Month") {
             for (let i = 0; i < arrayDate.length; i++) {
@@ -49,12 +61,23 @@ exports.calcu = async (req, res) => {
                     status: "COMPLETED"
                 });
 
+                const supplyItems = await Supply.find({
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    },
+                });
+                let expenditure = 0;
+                for (const supplyItem of supplyItems) {
+                    expenditure += supplyItem.price * supplyItem.quantity;
+                }
+
                 let totalRevenue = 0;
                 for (const order of orders) {
                     totalRevenue += order.total_price;
                 }
 
-                result.push([arrayDate[i], totalRevenue]);
+                result.push([arrayDate[i], totalRevenue, expenditure]);
             }
         } else if (typeRevenue === "Year") {
             for (let i = 0; i < arrayDate.length; i++) {
@@ -69,13 +92,23 @@ exports.calcu = async (req, res) => {
                     },
                     status: "COMPLETED"
                 });
+                const supplyItems = await Supply.find({
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    },
+                });
+                let expenditure = 0;
+                for (const supplyItem of supplyItems) {
+                    expenditure += supplyItem.price * supplyItem.quantity;
+                }
 
                 let totalRevenue = 0;
                 for (const order of orders) {
                     totalRevenue += order.total_price;
                 }
 
-                result.push([arrayDate[i], totalRevenue]);
+                result.push([arrayDate[i], totalRevenue, expenditure]);
             }
         }
         res.status(200).send({ typeRevenue, result });
@@ -110,7 +143,7 @@ exports.exportCSV = async (req, res) => {
             fields.push(newField);
         }
         fields.push(["", "", "", "", "", "", totalRevenue]);
-        let csv = parse(fields,opts);
+        let csv = parse(fields, opts);
         fs.writeFile(filePath, csv, function (err) {
             if (err) {
                 return res.json(err).status(500);

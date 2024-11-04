@@ -98,7 +98,7 @@ exports.update = async (req, res) => {
             supplyItem.price = req.body.price || supplyItem.price;
             supplyItem.priceSale = req.body.priceSale || supplyItem.priceSale;
             supplyItem.quantity = req.body.quantity || supplyItem.quantity;
-            supplyItem.image = req.file ? req.body.image : supplyItem.image;
+            supplyItem.image = req.file ? req.file.filename : supplyItem.image;
             await supplyItem.save();
             res.status(200).send({ message: "Supply item updated successfully." });
         });
