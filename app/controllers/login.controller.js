@@ -7,127 +7,64 @@ const Customer = db.customer;
 const Admin = db.admin;
 
 exports.login = async (req, res) => {
-    if (!req.body.email || !req.body.password || !req.body.page) {
+    if (!req.body.email || !req.body.password) {
         return res.status(400).send({ message: "Content can not be empty!" });
     }
 
-    if (req.body.page === 'user') {
-        try {
-            // Find account
-            const data = await Customer.findOne({ email: req.body.email });
+    try {
+        // Find account
+        const data = await Customer.findOne({ email: req.body.email });
 
-            if (!data) {
-                return res.status(401).send({
-                    message: `Customer not found with email ${req.body.email}.`
-                });
-            }
-
-            // Check password
-            const isPasswordValid = bcrypt.compareSync(req.body.password, data.hash_password);
-            if (!isPasswordValid) {
-                return res.status(401).send({
-                    message: `Incorrect password.`
-                });
-            }
-
-            const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || jwtVariable.accessTokenLife;
-            const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || jwtVariable.accessTokenSecret;
-            const dataForAccessToken = {
-                id: data.id,
-                email: data.email,
-                first_name: data.first_name,
-                last_name: data.last_name,
-                phone: data.phone,
-                age: data.age,
-                gender: data.gender,
-                avatar: data.avatar,
-                role: "user"
-            };
-            const accessToken = await authMethod.generateToken(
-                dataForAccessToken,
-                accessTokenSecret,
-                accessTokenLife,
-            );
-            if (!accessToken) {
-                return res.status(500).send({
-                    message: `Create token failed.`
-                });
-            }
-
-            const refreshTokenLife = process.env.ACCESS_TOKEN_LIFE || jwtVariable.refreshTokenLife;
-            const refreshTokenSecret = process.env.ACCESS_TOKEN_SECRET || jwtVariable.refreshTokenSecret;
-            const refreshToken = await authMethod.generateToken(
-                dataForAccessToken,
-                refreshTokenSecret,
-                refreshTokenLife,
-            );
-
-            return res.json({ accessToken, refreshToken });
-        } catch (error) {
-            console.error(error);
-            return res.status(500).send({
-                message: "An error occurred while processing your request."
+        if (!data) {
+            return res.status(401).send({
+                message: `Customer not found with email ${req.body.email}.`
             });
         }
-    } else {
-        try {
-            // Find account
-            const data = await Admin.findOne({ email: req.body.email });
 
-            if (!data) {
-                return res.status(401).send({
-                    message: `Admin not found with email ${req.body.email}.`
-                });
-            }
-
-            // Check password
-            const isPasswordValid = bcrypt.compareSync(req.body.password, data.hash_password);
-            if (!isPasswordValid) {
-                return res.status(401).send({
-                    message: `Incorrect password.`
-                });
-            }
-
-            const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || jwtVariable.accessTokenLife;
-            const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || jwtVariable.accessTokenSecret;
-            const dataForAccessToken = {
-                id: data.id,
-                email: data.email,
-                firstName: data.first_name,
-                lastName: data.last_name,
-                phone: data.phone,
-                age: data.age,
-                gender: data.gender,
-                avatar: data.avatar,
-                role: data.role
-            };
-            const accessToken = await authMethod.generateToken(
-                dataForAccessToken,
-                accessTokenSecret,
-                accessTokenLife,
-            );
-            if (!accessToken) {
-                return res.status(500).send({
-                    message: `Create token failed.`
-                });
-            }
-
-            const refreshTokenLife = process.env.ACCESS_TOKEN_LIFE || jwtVariable.refreshTokenLife;
-            const refreshTokenSecret = process.env.ACCESS_TOKEN_SECRET || jwtVariable.refreshTokenSecret;
-            const refreshToken = await authMethod.generateToken(
-                dataForAccessToken,
-                refreshTokenSecret,
-                refreshTokenLife,
-            );
-
-            return res.json({ accessToken, refreshToken });
-        } catch (error) {
-            console.error(error);
-            return res.status(500).send({
-                message: "An error occurred while processing your request."
+        // Check password
+        const isPasswordValid = bcrypt.compareSync(req.body.password, data.hash_password);
+        if (!isPasswordValid) {
+            return res.status(401).send({
+                message: `Incorrect password.`
             });
         }
+
+        const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || jwtVariable.accessTokenLife;
+        const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || jwtVariable.accessTokenSecret;
+        const dataForAccessToken = {
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            class: data.class,
+            role: data.role,
+        };
+        const accessToken = await authMethod.generateToken(
+            dataForAccessToken,
+            accessTokenSecret,
+            accessTokenLife,
+        );
+        if (!accessToken) {
+            return res.status(500).send({
+                message: `Create token failed.`
+            });
+        }
+
+        const refreshTokenLife = process.env.ACCESS_TOKEN_LIFE || jwtVariable.refreshTokenLife;
+        const refreshTokenSecret = process.env.ACCESS_TOKEN_SECRET || jwtVariable.refreshTokenSecret;
+        const refreshToken = await authMethod.generateToken(
+            dataForAccessToken,
+            refreshTokenSecret,
+            refreshTokenLife,
+        );
+
+        return res.json({ accessToken, refreshToken });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({
+            message: "An error occurred while processing your request."
+        });
     }
+
 };
 
 exports.register = async (req, res) => {
@@ -146,13 +83,7 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Check password confirmation
-        if (req.body.password !== req.body.confirm_password) {
-            return res.status(400).send({
-                message: "Password confirmation does not match!",
-            });
-        }
-
+        console.log(req.body);
         // Hash password
         const hashPassword = bcrypt.hashSync(req.body.password, SALT_ROUNDS);
 
@@ -160,10 +91,9 @@ exports.register = async (req, res) => {
         const newCustomer = new Customer({
             email: req.body.email,
             hash_password: hashPassword,
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            phone: req.body.phone,
-            gender: req.body.gender,
+            name: req.body.name,
+            class: req.body.class,
+            role: req.body.role,
         });
 
         // Save the new customer to the database
@@ -225,23 +155,16 @@ exports.refreshToken = async (req, res) => {
             dataForAccessToken = {
                 id: customer.id,
                 email: customer.email,
-                firstName: customer.first_name,
-                lastName: customer.last_name,
-                phone: customer.phone,
-                age: customer.age,
-                gender: customer.gender,
-                avatar: customer.avatar,
+                name: customer.name,
+                class: customer.class,
+                role: admin.role,
             };
         } else {
             dataForAccessToken = {
                 id: admin.id,
                 email: admin.email,
-                firstName: admin.first_name,
-                lastName: admin.last_name,
-                phone: admin.phone,
-                age: admin.age,
-                gender: admin.gender,
-                avatar: admin.avatar,
+                name: admin.name,
+                class: admin.class,
                 role: admin.role,
             };
         }
@@ -258,55 +181,6 @@ exports.refreshToken = async (req, res) => {
         console.error(error);
         return res.status(500).send({
             message: 'An error occurred while processing your request.',
-        });
-    }
-};
-
-exports.createAdmin = async (req, res) => {
-    try {
-        // Check if request body is empty
-        if (!req.body) {
-            return res.status(400).send({ message: "Content can not be empty!" });
-        }
-
-        // Find account by email
-        const admin = await Admin.findOne({ email: req.body.email });
-
-        if (admin) {
-            return res.status(401).send({
-                message: `Admin already exists with email ${req.body.email}.`,
-            });
-        }
-
-        // Check password confirmation
-        if (req.body.password !== req.body.confirm_password) {
-            return res.status(400).send({
-                message: "Password confirmation does not match!",
-            });
-        }
-
-        // Hash password
-        const hashPassword = bcrypt.hashSync(req.body.password, SALT_ROUNDS);
-
-        // Admin a new customer
-        const newAdmin = new Admin({
-            email: req.body.email,
-            hash_password: hashPassword,
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            phone: req.body.phone,
-            gender: req.body.gender,
-            role: req.body.role
-        });
-
-        // Save the new customer to the database
-        const savedAdmin = await newAdmin.save();
-
-        res.send(savedAdmin);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({
-            message: "An error occurred while processing your request.",
         });
     }
 };

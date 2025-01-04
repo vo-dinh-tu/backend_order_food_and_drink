@@ -1,3 +1,4 @@
+const e = require("express");
 const db = require("../models");
 const Customer = db.customer;
 const middlewares = require("./auth.middlewares");
@@ -62,4 +63,26 @@ exports.updateCustomer = async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
+
+exports.getCustomer = async (req, res) => {
+    try {
+        const auth = await middlewares.checkAuth(req);
+        if (!auth) {
+            return res.status(401).json({ message: "Authentication failed" });
+        }
+
+        const customerId = auth.id;
+
+        const customer = await Customer.findById(customerId);
+
+        if (!customer) {
+            return res.status(404).json({ error: "Customer not found" });
+        }
+
+        return res.json(customer);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
 

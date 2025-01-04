@@ -1,24 +1,20 @@
 module.exports = app => {
-    const login = require("../controllers/login.controller.js");
-    const authMiddleware = require('../controllers/auth.middlewares.js');
-  
-    var router = require("express").Router();
-  
-    // Login
-    router.post("/login", login.login);
+  const login = require("../controllers/login.controller.js");
+  const authMiddleware = require('../controllers/auth.middlewares.js');
 
-    // Get profile
-    router.get("/", authMiddleware.isAuth);
+  var router = require("express").Router();
 
-    // Register
-    router.post("/register", login.register);
+  // Login
+  router.post("/login", login.login);
 
-    // Refresh token
-    router.post("/refresh-token", login.refreshToken);
+  // Get profile
+  router.get("/", authMiddleware.isAuth);
 
-    // Register Admin
-    router.post("/admin/register", login.createAdmin);
+  // Register
+  router.post("/register", login.register);
 
-    app.use("/api/auth", router);
-  };
-  
+  // Refresh token
+  router.post("/refresh-token", login.refreshToken);
+
+  app.use("/api/auth", router);
+};
