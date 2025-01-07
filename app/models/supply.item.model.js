@@ -24,6 +24,10 @@ module.exports = mongoose => {
         type: Number,
         default: 0,
       },
+      totalPrice: {
+        type: Number,
+        required: true,
+      },
       is_active: {
         type: Boolean,
         default: true,

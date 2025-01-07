@@ -34,15 +34,16 @@ exports.create = async (req, res) => {
                 return res.status(400).send({ message: err.message });
             }
 
-            if (!req.body.name || !req.body.price || !req.body.quantity || !req.body.priceSale) {
-                return res.status(400).send({ message: "Name, price, quantity, and priceSale are required fields." });
+            if (!req.body.name || !req.body.price || !req.body.quantity || !req.body.totalPrice) {
+                return res.status(400).send({ message: "Name, price, quantity, and totalPrice are required fields." });
             }
 
             const supplyItem = new SupplyItem({
                 name: req.body.name,
                 exports: 0,
                 price: req.body.price,
-                priceSale: req.body.priceSale,
+                totalPrice: req.body.totalPrice,
+                priceSale: 0,
                 quantity: req.body.quantity,
                 image: req.file ? req.file.filename : null,
             });
@@ -96,7 +97,7 @@ exports.update = async (req, res) => {
             }
             supplyItem.name = req.body.name || supplyItem.name;
             supplyItem.price = req.body.price || supplyItem.price;
-            supplyItem.priceSale = req.body.priceSale || supplyItem.priceSale;
+            supplyItem.totalPrice = req.body.totalPrice || supplyItem.totalPrice;
             supplyItem.quantity = req.body.quantity || supplyItem.quantity;
             supplyItem.image = req.file ? req.file.filename : supplyItem.image;
             await supplyItem.save();

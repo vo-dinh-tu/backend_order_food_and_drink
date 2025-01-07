@@ -37,7 +37,7 @@ exports.calcu = async (req, res) => {
                 });
                 let expenditure = 0;
                 for (const supplyItem of supplyItems) {
-                    expenditure += supplyItem.price * supplyItem.quantity;
+                    expenditure += supplyItem.totalPrice;
                 }
 
                 let totalRevenue = 0;
@@ -69,7 +69,7 @@ exports.calcu = async (req, res) => {
                 });
                 let expenditure = 0;
                 for (const supplyItem of supplyItems) {
-                    expenditure += supplyItem.price * supplyItem.quantity;
+                    expenditure += supplyItem.totalPrice
                 }
 
                 let totalRevenue = 0;
@@ -100,7 +100,7 @@ exports.calcu = async (req, res) => {
                 });
                 let expenditure = 0;
                 for (const supplyItem of supplyItems) {
-                    expenditure += supplyItem.price * supplyItem.quantity;
+                    expenditure += supplyItem.totalPrice
                 }
 
                 let totalRevenue = 0;
