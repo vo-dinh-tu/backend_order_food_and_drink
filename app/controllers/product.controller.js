@@ -119,6 +119,7 @@ exports.update = async (req, res) => {
             product.detail = req.body.detail || product.detail;
             product.price = req.body.price || product.price;
             product.image = req.file ? req.file.filename : product.image;
+            product.is_active = req.body.is_active || product.is_active; 
 
             // Save changes
             await product.save();
